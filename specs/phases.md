@@ -45,6 +45,14 @@ Build an AI model that can predict whether a patient's tumor is malignant or ben
 
 ### Common cleaning tasks:
 - **Convert diagnosis labels**: "M"/"B" → 1/0
+  ```python
+  # Convert diagnosis from text to numbers
+  df['diagnosis'] = df['diagnosis'].map({'M': 1, 'B': 0})
+  
+  # Check the conversion worked
+  print(df['diagnosis'].value_counts())
+  # Should show: 1 (malignant) and 0 (benign) counts
+  ```
 - **Remove duplicates**: Delete patients that appear twice
 - **Drop unnecessary columns**: Remove any unnamed or ID columns
 - **Check data types**: Ensure all features are numeric
@@ -109,9 +117,9 @@ Build an AI model that can predict whether a patient's tumor is malignant or ben
 - **Remove useless columns**: 
   - `id` - just a random number, doesn't tell us anything about diagnosis
   - `Unnamed: 32` - often present in Kaggle datasets, contains no useful information
-- **Prepare data for training**: 
+- **Prepare data for training**:
   - X = cell measurements (radius, texture, smoothness, concavity, etc.)
-  - y = diagnosis (malignant=1, benign=0)
+  - y = diagnosis (malignant=1, benign=0) - already converted "M"/"B" to 1/0 in Phase 3
   - Split data: 80% to train, 20% to test
 - **Handle class imbalance**: 
   - Cancer data is usually ~60/40 (less extreme than churn)
@@ -119,7 +127,7 @@ Build an AI model that can predict whether a patient's tumor is malignant or ben
 - **Scale numerical features**: 
   - Use StandardScaler to make all measurements the same scale
   - Prevents the model from favoring large measurements over small ones
-  - Make sure to do it after splitting the data into training and testing not before
+  - **Important**: Do this AFTER splitting data into train/test, not before
 - **Feature selection**: 
   - Consider reducing from 30+ features to most important ones
   - Use correlation analysis or feature importance
