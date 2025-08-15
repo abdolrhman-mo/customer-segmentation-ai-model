@@ -186,6 +186,8 @@ Build an AI model that can predict whether a patient's tumor is malignant or ben
 
 ### Common optimization techniques:
 - **Cross-validation**: Use k-fold cross-validation for small datasets
+  - Why: Relying only on one train/test split can give misleading results with small datasets.
+  - Action: Use k-fold (preferably stratified k-fold) cross-validation when training & tuning.
 <!-- - **Hyperparameter tuning**: Adjust algorithm settings for better performance
 - **Feature selection**: Remove unimportant features that confuse the model
 - **Ensemble methods**: Combine multiple models for better predictions -->
