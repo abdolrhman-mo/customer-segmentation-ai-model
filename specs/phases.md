@@ -185,10 +185,10 @@ Build an AI model that can predict whether a patient's tumor is malignant or ben
 - Like adjusting settings to get better performance
 
 ### Common optimization techniques:
-- **Hyperparameter tuning**: Adjust algorithm settings for better performance
-- **Feature selection**: Remove unimportant features that confuse the model
 - **Cross-validation**: Use k-fold cross-validation for small datasets
-- **Ensemble methods**: Combine multiple models for better predictions
+<!-- - **Hyperparameter tuning**: Adjust algorithm settings for better performance
+- **Feature selection**: Remove unimportant features that confuse the model
+- **Ensemble methods**: Combine multiple models for better predictions -->
 
 ### Why this matters:
 - Can improve accuracy from 90% to 95%+
