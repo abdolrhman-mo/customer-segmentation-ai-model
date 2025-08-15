@@ -2,7 +2,7 @@ import streamlit as st
 
 # Import our modular components
 from ui.ui_pages.best_model_analysis_page import render_best_model_analysis_page
-# from ui.ui_pages.patient_diagnosis_page import render_patient_diagnosis_page
+from ui.ui_pages.patient_diagnosis_page import render_patient_diagnosis_page
 from ui.ui_pages.technical_implementation_page import render_technical_implementation_page
 
 # Page config
@@ -41,7 +41,7 @@ st.markdown('<h1 class="main-header">🎯 Breast Cancer Diagnosis App</h1>', uns
 st.sidebar.title("🎯 Navigation")
 page = st.sidebar.radio("Choose Section:", [
     "📊 Best Model Analysis",
-    # "🔍 Patient Diagnosis",
+    "🔍 Patient Diagnosis",
     "⚙️ Technical Implementation"
 ])
 
