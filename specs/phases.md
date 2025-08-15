@@ -152,7 +152,7 @@ We’re teaching a **mathematical model** (an algorithm) to recognize patterns i
       - High radius + low smoothness + high concavity → often **M**  
       - Low radius + smooth edges → often **B**
 
-### Popular algorithms to try:
+### Main tasks (algorithms to try):
 - **Logistic Regression**: Simple, fast, good starting point, interpretable
 - **SVM (Support Vector Machine)**: Good for small datasets, handles non-linear boundaries
 - **Random Forest**: More powerful, handles complex patterns, shows feature importance
