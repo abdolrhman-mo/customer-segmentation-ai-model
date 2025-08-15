@@ -132,6 +132,8 @@ Build an AI model that can predict whether a patient's tumor is malignant or ben
   - Consider reducing from 30+ features to most important ones
   - Use correlation analysis or feature importance
 
+**Note**: You may try handling class imbalance and feature selection after finishing the model training to see if the recall increases.
+
 ### Why this matters:
 - Computer needs clean, simple data to learn from
 - Useless columns confuse the computer and make predictions worse
