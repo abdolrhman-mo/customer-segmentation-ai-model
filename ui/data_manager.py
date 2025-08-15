@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import joblib
+import json
 import os
 import warnings
 warnings.filterwarnings('ignore')
@@ -8,7 +9,7 @@ warnings.filterwarnings('ignore')
 # Define the models path
 models_path = "models"
 
-def load_best_model(patient_data):
+def load_and_predict_best_model(patient_data):
     """
     Load the saved best model and make predictions on new patient data
     
@@ -61,6 +62,50 @@ def load_best_model(patient_data):
     except Exception as e:
         print(f"❌ Error loading model: {e}")
         return None, None, None
+
+def show_best_model_stats():
+    """
+    Load and display the best model's performance metrics
+    
+    Returns:
+    metrics: Dictionary containing all performance metrics
+    """
+    try:
+        # Load performance metrics from JSON file
+        metrics_path = f"{models_path}/performance_metrics.json"
+        
+        if not os.path.exists(metrics_path):
+            print("❌ Performance metrics file not found. Run training first.")
+            return None
+        
+        with open(metrics_path, 'r') as f:
+            metrics = json.load(f)
+        
+        # Display metrics in nice format
+        print("\n" + "="*60)
+        print(f"🏆 BEST {metrics['algorithm'].upper()} MODEL PERFORMANCE")
+        print("="*60)
+        print(f"📊 Threshold: {metrics['best_threshold']}")
+        print(f"📈 Recall: {metrics['core_metrics']['recall']}")
+        print(f"🎯 Precision: {metrics['core_metrics']['precision']}")
+        print(f"⚖️  F1-Score: {metrics['core_metrics']['f1_score']}")
+        print(f"✅ Accuracy: {metrics['core_metrics']['accuracy']}")
+        
+        # Show additional metrics if available
+        if metrics['additional_metrics']['specificity']:
+            print(f"🛡️  Specificity: {metrics['additional_metrics']['specificity']}")
+        if metrics['additional_metrics']['roc_auc']:
+            print(f"📊 ROC AUC: {metrics['additional_metrics']['roc_auc']}")
+        
+        print(f"📅 Trained: {metrics['training_info']['date']}")
+        print(f"📊 Dataset Size: {metrics['training_info']['dataset_size']} samples")
+        print("="*60)
+        
+        return metrics
+        
+    except Exception as e:
+        print(f"❌ Error loading performance metrics: {e}")
+        return None
 
 def create_sample_patient():
     """
@@ -126,6 +171,7 @@ def test_model_loading():
 # Example usage (uncomment to test)
 # if __name__ == "__main__":
 #     test_model_loading()
+#     show_best_model_stats()
 
 
 # Example usage (uncomment to test)

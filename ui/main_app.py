@@ -18,7 +18,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # Import our modular components
-from ui.data_manager import load_best_model
+from ui.data_manager import load_and_predict_best_model
 from ui.ui_pages.best_model_analysis_page import render_best_model_analysis_page
 from ui.ui_pages.technical_implementation_page import render_technical_implementation_page
 
@@ -77,14 +77,13 @@ page = st.sidebar.radio("Choose Section:", [
 
 # Load data and model
 with st.spinner("🔄 Loading data and checking for saved models..."):
-    df = load_best_model()
+    df = load_and_predict_best_model()
     try:
         # Try to load saved model first
         svm_model, scaler, processing, threshold_results, svm_probs, y_test, X_test_scaled = train_best_model(df)
         st.success("✅ Using saved model from models/ folder - Fast loading!")
     except Exception as e:
         st.warning("⚠️ No saved model found. Training new model...")
-        svm_model, scaler, processing, threshold_results, svm_probs, y_test, X_test_scaled = train_svm_model(df)
 
 # Convert results to DataFrame
 results_df = pd.DataFrame(threshold_results)

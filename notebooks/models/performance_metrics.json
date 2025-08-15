@@ -1,0 +1,13 @@
+{
+  "algorithm": "Voting Model",
+  "best_threshold": 0.1,
+  "core_metrics": {
+    "recall": 0.9762,
+    "precision": 0.82,
+    "f1_score": 0.8913
+  },
+  "training_info": {
+    "date": "2025-08-15 19:11:36",
+    "dataset_size": 569
+  }
+}
