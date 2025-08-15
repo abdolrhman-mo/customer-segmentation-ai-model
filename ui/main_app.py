@@ -18,8 +18,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # Import our modular components
-from ui.data_manager import load_and_process_data, train_best_model
-from ui.ui_pages.svm_analysis_page import render_svm_analysis_page
+from ui.data_manager import load_best_model
+from ui.ui_pages.best_model_analysis_page import render_best_model_analysis_page
 from ui.ui_pages.technical_implementation_page import render_technical_implementation_page
 
 # Page config
@@ -77,7 +77,7 @@ page = st.sidebar.radio("Choose Section:", [
 
 # Load data and model
 with st.spinner("🔄 Loading data and checking for saved models..."):
-    df = load_and_process_data()
+    df = load_best_model()
     try:
         # Try to load saved model first
         svm_model, scaler, processing, threshold_results, svm_probs, y_test, X_test_scaled = train_best_model(df)
@@ -96,8 +96,8 @@ if 'svm_model' in locals() and svm_model is not None:
     st.sidebar.info(f"Max Recall: {results_df['Recall'].max():.3f}")
 
 # Page routing
-if page == "📊 SVM Threshold Analysis":
-    render_svm_analysis_page(df, results_df, y_test)
+if page == "📊 Best Model Analysis":
+    render_best_model_analysis_page(df, results_df, y_test)
 
 elif page == "⚙️ Technical Implementation":
     render_technical_implementation_page(df)

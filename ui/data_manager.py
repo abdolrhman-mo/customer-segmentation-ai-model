@@ -8,7 +8,7 @@ warnings.filterwarnings('ignore')
 # Define the models path
 models_path = "models"
 
-def load_and_predict_best_model(patient_data):
+def load_best_model(patient_data):
     """
     Load the saved best model and make predictions on new patient data
     

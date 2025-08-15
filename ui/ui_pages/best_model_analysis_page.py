@@ -2,17 +2,17 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-def render_svm_analysis_page(df, results_df, y_test):
-    """Render the SVM Threshold Analysis page"""
-    st.markdown("## 📊 SVM Threshold Analysis")
+def render_best_model_analysis_page(df, results_df, y_test):
+    """Render the Best Model Analysis page"""
+    st.markdown("## 📊 Best Model Analysis")
     
     # Dataset overview
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("Dataset Size", len(df))
     with col2:
-        churn_rate = (df['Churn'] == 'Yes').mean()
-        st.metric("Churn Rate", f"{churn_rate:.1%}")
+        malignant_rate = (df['diagnosis'] == 'M').mean()
+        st.metric("Malignant Rate", f"{malignant_rate:.1%}")
     with col3:
         st.metric("Features Used", len(df.columns)-1)
     with col4:
@@ -57,7 +57,7 @@ def render_svm_analysis_page(df, results_df, y_test):
                   annotation_text=f"Best Recall: {best_recall:.4f}")
     
     fig.update_layout(
-        title="🎯 SVM Threshold vs Performance Metrics",
+        title="🎯 Best Model Threshold vs Performance Metrics",
         xaxis_title="Decision Threshold",
         yaxis_title="Score",
         height=500,
@@ -71,11 +71,11 @@ def render_svm_analysis_page(df, results_df, y_test):
     ### 🎯 Key Insight: Threshold {best_threshold} = Maximum Recall
     
     **Why lower threshold = higher recall?**
-    - **Lower threshold (0.1)**: Model says "Yes, will churn" even with low confidence
+    - **Lower threshold (0.1)**: Model says "Yes, will be malignant" even with low confidence
     - **Higher threshold (0.9)**: Model only says "Yes" when very confident
-    - **For churn detection**: Better to catch all potential churners (even false alarms) than miss real ones
+    - **For diagnosis**: Better to catch all potential malignant cases (even false alarms) than miss real ones
     
-    **Your SVM at threshold 0.1:**
-    - Catches **{best_recall:.1%}** of all customers who will actually churn
-    - This means **{(1-best_recall)*100:.1f}% missed churn rate** (very low!)
+    **Your best model at threshold 0.1:**
+    - Catches **{best_recall:.1%}** of all patients who will actually be malignant
+    - This means **{(1-best_recall)*100:.1f}% missed malignant rate** (very low!)
     """)
