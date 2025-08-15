@@ -1,81 +1,39 @@
 import streamlit as st
-import pandas as pd
-import plotly.graph_objects as go
+from ui.data_manager import show_best_model_stats
 
-def render_best_model_analysis_page(df, results_df, y_test):
-    """Render the Best Model Analysis page"""
+def render_best_model_analysis_page():
+    """Render the Best Model Analysis page using saved performance metrics"""
     st.markdown("## 📊 Best Model Analysis")
     
-    # Dataset overview
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Dataset Size", len(df))
-    with col2:
-        malignant_rate = (df['diagnosis'] == 'M').mean()
-        st.metric("Malignant Rate", f"{malignant_rate:.1%}")
-    with col3:
-        st.metric("Features Used", len(df.columns)-1)
-    with col4:
-        st.metric("Test Set Size", len(y_test))
+    # Call the function to display metrics
+    metrics = show_best_model_stats()
     
-    st.markdown("### 🎯 Why Threshold 0.1 Achieves Highest Recall")
+    if metrics is not None:
+                
+        # Training info
+        st.markdown("### 📅 Training Information")
+        st.info(f"**Trained on**: {metrics['training_info']['date']}")
+        st.info(f"**Dataset Size**: {metrics['training_info']['dataset_size']} samples")
+        
+        # Key insights
+        st.markdown("### 🎯 Key Insights")
+        st.success(f"**Maximum Recall Achieved**: {metrics['core_metrics']['recall']:.1%}")
+        st.warning(f"**Threshold Trade-off**: Lower threshold ({metrics['best_threshold']:.1f}) = Higher recall")
     
-    # Threshold comparison chart
-    fig = go.Figure()
+        # Show the best model stats
+        st.markdown("### 🏆 Model Performance Metrics")
     
-    fig.add_trace(go.Scatter(
-        x=results_df['Threshold'],
-        y=results_df['Recall'],
-        mode='lines+markers',
-        name='Recall',
-        line=dict(color='#ff6b6b', width=4),
-        marker=dict(size=10)
-    ))
-    
-    fig.add_trace(go.Scatter(
-        x=results_df['Threshold'],
-        y=results_df['Precision'],
-        mode='lines+markers',
-        name='Precision',
-        line=dict(color='#4ecdc4', width=3)
-    ))
-    
-    fig.add_trace(go.Scatter(
-        x=results_df['Threshold'],
-        y=results_df['F1_Score'],
-        mode='lines+markers',
-        name='F1 Score',
-        line=dict(color='#45b7d1', width=3)
-    ))
-    
-    # Highlight the 0.1 threshold
-    max_recall_idx = results_df['Recall'].idxmax()
-    best_threshold = results_df.loc[max_recall_idx, 'Threshold']
-    best_recall = results_df.loc[max_recall_idx, 'Recall']
-    
-    fig.add_vline(x=best_threshold, line_dash="dash", line_color="red", 
-                  annotation_text=f"Best Recall: {best_recall:.4f}")
-    
-    fig.update_layout(
-        title="🎯 Best Model Threshold vs Performance Metrics",
-        xaxis_title="Decision Threshold",
-        yaxis_title="Score",
-        height=500,
-        showlegend=True
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
-    
-    # Explanation
-    st.markdown(f"""
-    ### 🎯 Key Insight: Threshold {best_threshold} = Maximum Recall
-    
-    **Why lower threshold = higher recall?**
-    - **Lower threshold (0.1)**: Model says "Yes, will be malignant" even with low confidence
-    - **Higher threshold (0.9)**: Model only says "Yes" when very confident
-    - **For diagnosis**: Better to catch all potential malignant cases (even false alarms) than miss real ones
-    
-    **Your best model at threshold 0.1:**
-    - Catches **{best_recall:.1%}** of all patients who will actually be malignant
-    - This means **{(1-best_recall)*100:.1f}% missed malignant rate** (very low!)
-    """)
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.metric("Algorithm", metrics['algorithm'].upper())
+            st.metric("Best Threshold", f"{metrics['best_threshold']:.3f}")
+            st.metric("Recall", f"{metrics['core_metrics']['recall']:.4f}")
+            st.metric("Precision", f"{metrics['core_metrics']['precision']:.4f}")
+        
+        with col2:
+            st.metric("F1-Score", f"{metrics['core_metrics']['f1_score']:.4f}")
+        
+    else:
+        st.error("❌ No performance metrics found. Please run model training first.")
+        st.info("💡 Tip: Use the save_performance_metrics function in your notebook to save model results.")

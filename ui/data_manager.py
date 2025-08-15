@@ -89,13 +89,6 @@ def show_best_model_stats():
         print(f"📈 Recall: {metrics['core_metrics']['recall']}")
         print(f"🎯 Precision: {metrics['core_metrics']['precision']}")
         print(f"⚖️  F1-Score: {metrics['core_metrics']['f1_score']}")
-        print(f"✅ Accuracy: {metrics['core_metrics']['accuracy']}")
-        
-        # Show additional metrics if available
-        if metrics['additional_metrics']['specificity']:
-            print(f"🛡️  Specificity: {metrics['additional_metrics']['specificity']}")
-        if metrics['additional_metrics']['roc_auc']:
-            print(f"📊 ROC AUC: {metrics['additional_metrics']['roc_auc']}")
         
         print(f"📅 Trained: {metrics['training_info']['date']}")
         print(f"📊 Dataset Size: {metrics['training_info']['dataset_size']} samples")

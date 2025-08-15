@@ -1,8 +1,7 @@
 import streamlit as st
-import pandas as pd
 
-def render_technical_implementation_page(df):
-    """Render the Technical Implementation page"""
+def render_technical_implementation_page():
+    """Render the Technical Implementation page with valuable information from phases.md"""
     st.markdown("## ⚙️ Technical Implementation")
     
     st.markdown("### 🛠️ Your ML Pipeline Architecture")
@@ -10,210 +9,124 @@ def render_technical_implementation_page(df):
     # Pipeline flow
     st.markdown("""
     ```
-    Data Loading → Data Cleaning → Feature Engineering → 
-    Preprocessing → SMOTE Resampling → Scaling → 
-    SVM Training → Threshold Optimization → Performance Evaluation
+    Data Loading → Data Quality Assessment → Data Cleaning → 
+    Feature Engineering → Data Visualization → Preprocessing → 
+    Model Training → Model Evaluation → Model Optimization
     ```
     """)
     
-    # Code explanations
-    st.markdown("### 📝 Key Code Components")
+    # Project phases overview
+    st.markdown("### 📋 Complete Project Phases Overview")
     
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Data Processing", "Model Training", "Threshold Tuning", "Model Saving", "Project Phases"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Data Phases", "Model Phases", "Optimization", "Success Metrics", "Expected Outputs"])
     
     with tab1:
-        st.markdown("#### Data Loading & Preprocessing")
-        st.code('''
-# Your data loading logic
-df = pd.read_csv("data/WA_Fn-UseC_-Telco-Customer-Churn.csv")
-
-# Handle TotalCharges conversion
-df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
-df = df.dropna()
-
-# Column classification for preprocessing
-num_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
-categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
-        ''', language='python')
+        st.markdown("#### 📋 Phase 1: Data Loading & Initial Exploration")
+        st.markdown("""
+        - Load your CSV file into a pandas DataFrame
+        - Get a first look at your data to understand what you're working with
+        - Check if the file loaded correctly and see if data looks reasonable
+        """)
+        
+        st.markdown("#### 🔍 Phase 2: Data Quality Assessment")
+        st.markdown("""
+        - Check for missing values in cell measurements
+        - Look for duplicate patient records
+        - Ensure all measurements are numeric
+        - Check for outliers in medical measurements
+        - Verify class balance (malignant vs benign cases, usually ~60/40)
+        """)
+        
+        st.markdown("#### 🧹 Phase 3: Data Cleaning")
+        st.markdown("""
+        - Convert diagnosis labels: "M"/"B" → 1/0
+        - Remove duplicate patient records
+        - Drop unnecessary columns (id, Unnamed: 32)
+        - Ensure all features are numeric
+        - Handle outliers appropriately
+        """)
+        
+        st.markdown("#### 📊 Phase 5: Data Visualization & Exploration")
+        st.markdown("""
+        - Diagnosis distribution bar chart
+        - Feature comparison box plots (radius, texture, smoothness)
+        - Correlation heatmap between measurements
+        - Feature pair plots for key measurements
+        """)
     
     with tab2:
-        st.markdown("#### SVM Model Training")
-        st.code('''
-# SMOTE for handling imbalanced data
-smote = SMOTE(random_state=12)
-X_resampled, y_resampled = smote.fit_resample(X_train_cleaned, y_train)
-
-# Scaling for SVM
-scaler = StandardScaler()
-X_resampled_scaled = scaler.fit_transform(X_resampled)
-
-# SVM with linear kernel
-svm_model = SVC(kernel='linear', random_state=42, probability=True)
-svm_model.fit(X_resampled_scaled, y_resampled)
-        ''', language='python')
+        st.markdown("#### ⚙️ Phase 6: Data Preprocessing")
+        st.markdown("""
+        - Remove useless columns (id, Unnamed: 32)
+        - Prepare data for training (X = measurements, y = diagnosis)
+        - Split data: 80% train, 20% test
+        - Handle class imbalance (cancer data is usually ~60/40)
+        - Scale numerical features with StandardScaler
+        - Consider feature selection to reduce from 30+ features
+        """)
+        
+        st.markdown("#### 🤖 Phase 7: Model Training")
+        st.markdown("""
+        - **Logistic Regression**: Simple, fast, interpretable
+        - **SVM**: Good for small datasets, handles non-linear boundaries
+        - **Random Forest**: Powerful, handles complex patterns, shows feature importance
+        - **XGBoost**: Advanced ensemble method, often very accurate
+        - **k-NN**: Works well for small numerical datasets like cancer
+        """)
+        
+        st.markdown("#### 📊 Phase 8: Model Evaluation")
+        st.markdown("""
+        - Test models on unseen patient data
+        - Calculate accuracy, precision, recall, specificity, F1-score, ROC AUC
+        - Compare performance across different algorithms
+        - Focus on recall (sensitivity) for medical applications
+        """)
     
     with tab3:
-        st.markdown("#### Threshold Optimization for Maximum Recall")
-        st.code('''
-# Get prediction probabilities
-svm_probs = svm_model.predict_proba(X_test_scaled)[:, 1]
-
-# Test different thresholds
-thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-best_recall = 0
-
-for threshold in thresholds:
-    predictions = (svm_probs >= threshold).astype(int)
-    pred_labels = ['Yes' if pred == 1 else 'No' for pred in predictions]
-    
-    recall = recall_score(y_test, pred_labels, pos_label='Yes')
-    if recall > best_recall:
-        best_recall = recall
-        best_threshold = threshold
+        st.markdown("#### 🎯 Phase 9: Model Optimization")
+        st.markdown("""
+        **Cross-validation for Small Datasets:**
+        - Use k-fold cross-validation (preferably stratified)
+        - More reliable than single train/test split
+        - Every patient gets tested exactly once
+        - Average results from multiple tests
+        """)
         
-# Result: threshold = 0.1 gives highest recall!
-        ''', language='python')
+        st.markdown("#### 📌 k-NN Implementation Plan")
+        st.markdown("""
+        **What is k-NN?**
+        - Think of it like asking your neighbors for advice
+        - Find the "k" most similar patients in your dataset
+        - Predict diagnosis based on majority vote from similar patients
+        
+        **Implementation Steps:**
+        1. Scale data (StandardScaler)
+        2. Choose k values to test (3, 5, 7, 11, etc.)
+        3. Use cross-validation to find best k
+        4. Train model and evaluate performance
+        """)
     
     with tab4:
-        st.markdown("#### Model Persistence & Loading")
-        st.code('''
-# Save the trained model
-joblib.dump(svm_model, "models/svm_model.pkl")
-joblib.dump(scaler, "models/scaler.pkl")
-joblib.dump(processing, "models/preprocessing.pkl")
-
-# Save optimal threshold
-with open("models/svm_threshold.txt", 'w') as f:
-    f.write(str(best_threshold))
-
-# Load saved models (faster than training)
-manager = ChurnDataManager()
-if manager.load_saved_model():
-    print("✅ Using saved model - Fast loading!")
-else:
-    print("⚠️ No saved model found")
-        ''', language='python')
-        
-        # Add information about saved models
-        st.markdown("#### 💾 Saved Models in models/ Folder")
+        st.markdown("#### 📈 Success Metrics")
         st.markdown("""
-        The dashboard now automatically checks for saved models in the `models/` folder:
+        **Minimum Viable Model:**
+        - **Accuracy > 90%**: Better than random guessing
+        - **Recall > 95%**: Catch most malignant cases (critical for medical use)
+        - **Model runs without errors**: Technical success
         
-        - **`svm_model.pkl`**: Trained SVM classifier
-        - **`scaler.pkl`**: StandardScaler for feature normalization
-        - **`preprocessing.pkl`**: Complete preprocessing pipeline
-        - **`svm_threshold.txt`**: Optimal threshold for maximum recall
-        
-        **Benefits:**
-        - ⚡ **Fast loading**: No need to retrain every time
-        - 🔄 **Consistent results**: Same model performance across sessions
-        - 💾 **Production ready**: Models can be deployed without retraining
-        - 📊 **Demo predictions**: Generated automatically from saved models
+        **Medical Success:**
+        - **High sensitivity**: Don't miss malignant tumors
+        - **Acceptable specificity**: Minimize false alarms
+        - **Interpretability**: Doctors can understand predictions
         """)
     
     with tab5:
-        st.markdown("#### 📋 Complete Project Phases Overview")
+        st.markdown("#### 📁 Expected Project Outputs")
         st.markdown("""
-        **Phase 1: Data Loading & Initial Exploration**
-        - Load CSV file into pandas DataFrame
-        - Examine data shape, columns, and basic info
-        - Understand what data you're working with
-        
-        **Phase 2: Data Quality Assessment**
-        - Check for missing values, duplicates, wrong data types
-        - Identify imbalanced target (80% stayed, 20% churned)
-        - Find data problems that could break your model
-        
-        **Phase 3: Data Cleaning**
-        - Convert 'TotalCharges' from text to numeric
-        - Handle missing values and drop problematic rows
-        - Ensure data is ready for machine learning
-        
-        **Phase 4: Feature Engineering**
-        - Create new features from existing data
-        - Handle categorical variables (gender, contract type, services)
-        - Prepare features for model training
-        
-        **Phase 5: Data Visualization & Exploration**
-        - Create charts to understand churn patterns
-        - Identify which customer traits predict churn
-        - Generate business insights from data
-        
-        **Phase 6: Data Preprocessing**
-        - Remove useless columns (customerID)
-        - Convert text to numbers for ML algorithms
-        - Handle imbalanced data with SMOTE
-        - Scale numerical features
-        - Split data into training and testing sets
-        
-        **Phase 7: Model Training**
-        - Train multiple algorithms (Logistic Regression, SVM, XGBoost, Random Forest)
-        - Let algorithms learn patterns from customer data
-        - Create models that can predict churn
-        
-        **Phase 8: Model Evaluation**
-        - Test models on unseen data
-        - Calculate accuracy, precision, recall, F1-score
-        - Compare performance across different algorithms
-        
-        **Phase 9: Model Optimization**
-        - Fine-tune models for better performance
-        - Optimize thresholds for maximum recall
-        - Choose best model for deployment
+        1. **Trained model file**: Save your model to use later
+        2. **Performance report**: Accuracy, precision, recall, specificity metrics
+        3. **Feature importance**: Which cell measurements matter most for diagnosis
+        4. **Confusion matrix**: Detailed breakdown of predictions vs actual diagnoses
+        5. **Documentation**: What you learned and how to use the model for medical diagnosis
         """)
     
-    # Technical achievements
-    st.markdown("### 🏆 Your Technical Achievements")
-    
-    achievements = [
-        "✅ **Complete ML Pipeline**: Data loading → preprocessing → training → evaluation",
-        "✅ **Imbalanced Data Handling**: SMOTE for synthetic minority oversampling",
-        "✅ **Feature Engineering**: Proper encoding for categorical and numerical features",
-        "✅ **Model Optimization**: Threshold tuning for maximum recall",
-        "✅ **Production Ready**: Model serialization with joblib",
-        "✅ **Performance Analysis**: Comprehensive evaluation metrics"
-    ]
-    
-    for achievement in achievements:
-        st.markdown(achievement)
-    
-    # Dataset info
-    st.markdown("### 📊 Dataset Information")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("**Numerical Features:**")
-        num_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
-        for col in num_cols:
-            st.write(f"• {col}")
-    
-    with col2:
-        st.markdown("**Categorical Features:**")  
-        cat_cols = df.select_dtypes(include=['object']).columns.tolist()
-        cat_cols.remove('Churn')  # Remove target
-        for col in cat_cols:
-            st.write(f"• {col}")
-    
-    # Success metrics
-    st.markdown("### 📊 Success Metrics & Project Goals")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("**🎯 Minimum Viable Model:**")
-        st.markdown("- **Accuracy > 80%**: Better than random guessing")
-        st.markdown("- **Recall > 70%**: Catch most customers who will churn")
-        st.markdown("- **Model runs without errors**: Technical success")
-    
-    with col2:
-        st.markdown("**💼 Business Success:**")
-        st.markdown("- **Actionable insights**: Which factors drive churn most?")
-        st.markdown("- **Cost savings**: Prevent customer loss through targeted retention")
-        st.markdown("- **ROI**: Model saves more money than it costs to develop")
-    
-    st.markdown("### 📁 Expected Project Outputs")
-    st.markdown("1. **Trained model file**: Save your model to use later")
-    st.markdown("2. **Performance report**: Accuracy, precision, recall metrics")
-    st.markdown("3. **Feature importance**: Which customer attributes matter most")
-    st.markdown("4. **Predictions**: List of customers likely to churn")
-    st.markdown("5. **Documentation**: What you learned and how to use the model")
