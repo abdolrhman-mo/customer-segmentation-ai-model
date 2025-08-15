@@ -48,6 +48,7 @@ Build an AI model that can predict whether a patient's tumor is malignant or ben
 - **Remove duplicates**: Delete patients that appear twice
 - **Drop unnecessary columns**: Remove any unnamed or ID columns
 - **Check data types**: Ensure all features are numeric
+- **Cap the outliers**
 
 ### Why this matters:
 - Machine learning algorithms need clean, consistent data
@@ -118,6 +119,7 @@ Build an AI model that can predict whether a patient's tumor is malignant or ben
 - **Scale numerical features**: 
   - Use StandardScaler to make all measurements the same scale
   - Prevents the model from favoring large measurements over small ones
+  - Make sure to do it after splitting the data into training and testing not before
 - **Feature selection**: 
   - Consider reducing from 30+ features to most important ones
   - Use correlation analysis or feature importance
@@ -131,20 +133,61 @@ Build an AI model that can predict whether a patient's tumor is malignant or ben
 ## 🤖 **Phase 7: Model Training**
 
 ### What this means:
-- Teach a computer algorithm to recognize patterns between cell measurements and diagnosis
-- Like showing the algorithm: "Tumors with high radius and low smoothness are often malignant"
+We’re teaching a **mathematical model** (an algorithm) to recognize patterns in the measurements so it can tell **Malignant (M)** from **Benign (B)** tumors.
 
 ### What happens:
-- **Algorithm learns patterns**: High radius + low smoothness + high concavity = likely malignant
-- **Creates a "brain"**: Model that can make predictions on new patients
-- **Uses training data**: 80% of your patients to learn from
+**Feed the training data to the algorithm**  
+  - The algorithm looks for **patterns**:  
+    For example:  
+      - High radius + low smoothness + high concavity → often **M**  
+      - Low radius + smooth edges → often **B**
 
 ### Popular algorithms to try:
 - **Logistic Regression**: Simple, fast, good starting point, interpretable
 - **SVM (Support Vector Machine)**: Good for small datasets, handles non-linear boundaries
 - **Random Forest**: More powerful, handles complex patterns, shows feature importance
 - **XGBoost**: Advanced ensemble method, often very accurate
-- **k-NN**: Often works well for small numerical datasets like cancer
+- **k-NN**: Often works well for small numerical datasets like cancer (still not implemented and need a plan)
+
+### 📌 Plan for k-NN (k-Nearest Neighbors):
+
+**What is k-NN?**
+- Think of it like asking your neighbors for advice
+- For a new patient, find the "k" most similar patients in your dataset
+- Predict the new patient's diagnosis based on what most of those similar patients have
+
+**How it works:**
+1. **Find similar patients**: Look at patients with similar measurements (radius, texture, etc.)
+2. **Count diagnoses**: If 3 out of 5 similar patients have malignant tumors → predict malignant
+3. **Make prediction**: Go with the majority vote from similar patients
+
+**Step-by-step implementation:**
+
+1. **Prepare the data**
+   - Scale all measurements to the same range (use StandardScaler)
+   - Why? Because radius (big numbers) and smoothness (small numbers) need to be treated equally
+
+2. **Choose how many neighbors to look at**
+   - Start with k=5 (look at 5 most similar patients)
+   - Try different values: k=3, k=7, k=11, etc.
+   - Use cross-validation to find which k works best
+
+3. **Train the model**
+   ```python
+   from sklearn.neighbors import KNeighborsClassifier
+   model = KNeighborsClassifier(n_neighbors=5)  # Look at 5 neighbors
+   model.fit(X_train, y_train)
+   ```
+
+4. **Test and improve**
+   - Check accuracy, recall, and precision
+   - If results are poor, try different k values
+   - Try different ways to measure "similarity" (Euclidean vs Manhattan distance)
+
+**Why k-NN works well for cancer data:**
+- Cancer measurements follow patterns: similar measurements = similar diagnoses
+- No complex math assumptions - just "similar patients have similar outcomes"
+- Works great when you have clear patterns in your data (which cancer data usually has)
 
 ### Why this matters:
 - This is where the "AI" happens - the model learns to predict diagnosis
@@ -185,9 +228,44 @@ Build an AI model that can predict whether a patient's tumor is malignant or ben
 - Like adjusting settings to get better performance
 
 ### Common optimization techniques:
-- **Cross-validation**: Use k-fold cross-validation for small datasets
-  - Why: Relying only on one train/test split can give misleading results with small datasets.
-  - Action: Use k-fold (preferably stratified k-fold) cross-validation when training & tuning.
+
+#### **Cross-validation - What is it and why do we need it?**
+
+**The Problem with Simple Train/Test Split:**
+- When you have only 569 patients, splitting into 80% train (455) and 20% test (114) is risky
+- The test set might accidentally get all the "easy" cases or all the "hard" cases
+- This gives you misleading results - your model might look great or terrible just by chance
+
+**Cross-validation solves this by:**
+- **Dividing your data into 5 equal parts** (called "folds")
+- **Training 5 different times**, each time using 4 parts for training and 1 part for testing
+- **Every patient gets tested exactly once**, and every patient gets used for training 4 times
+- **Average the results** from all 5 tests to get a more reliable performance estimate
+
+**Simple Example (5-fold cross-validation):**
+```
+Fold 1: Train on parts 2,3,4,5 → Test on part 1
+Fold 2: Train on parts 1,3,4,5 → Test on part 2  
+Fold 3: Train on parts 1,2,4,5 → Test on part 3
+Fold 4: Train on parts 1,2,3,5 → Test on part 4
+Fold 5: Train on parts 1,2,3,4 → Test on part 5
+```
+
+**Why this is better:**
+- **More reliable**: You test on different combinations of patients
+- **No luck factor**: Can't accidentally get all easy or hard cases in test set
+- **Better estimate**: Average of 5 tests is more trustworthy than 1 test
+
+**How to use it:**
+```python
+from sklearn.model_selection import cross_val_score
+scores = cross_val_score(model, X, y, cv=5)  # 5-fold cross-validation
+print(f"Average accuracy: {scores.mean():.3f} (+/- {scores.std() * 2:.3f})")
+```
+
+**Stratified cross-validation (even better):**
+- Makes sure each fold has the same proportion of malignant vs benign cases
+- Prevents one fold from getting all malignant cases and another from getting all benign cases
 <!-- - **Hyperparameter tuning**: Adjust algorithm settings for better performance
 - **Feature selection**: Remove unimportant features that confuse the model
 - **Ensemble methods**: Combine multiple models for better predictions -->
